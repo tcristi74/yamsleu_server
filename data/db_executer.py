@@ -5,11 +5,11 @@ import logging
 from .db_config import DbConfig
 from typing import Tuple
 
-query_response = Tuple[bool, str]
+query_response = Tuple[object, str]
 
 class DbExecuter:
     '''
-    Writes data to postgres timescale db
+    Writes data to postgres 
     '''
 
     def __init__(self,  db_config_instance:DbConfig):
@@ -41,7 +41,7 @@ class DbExecuter:
                 logging.error("failed to connect to timescale db")
                 raise Exception("failed to establish connection to timescale db")
 
-    def get_query(self, query,args,fetch_results = False):
+    def get_query(self, query,args,fetch_results = False) ->query_response:
         """
         execute query
         :param results: array of rows to be written to databse
@@ -60,15 +60,16 @@ class DbExecuter:
                 #query = f"INSERT INTO public.{tableName} VALUES(%s,%s,%s,%s)"
                 # write batch
                 #result = psycopg2.extras.execute_values(ps_cursor, query, args, fetch=fetch_results)
-                ps_cursor.execute(query)
+                ps_cursor.execute(query,args)
                 records = ps_cursor.fetchall()
                 # ps_connection.commit()
                 logging.info(f"{len(records)} records returned")
                 logging.info("returning ps_connection to pool")
-                return records                
+                return (records,None)           
                         
         except Exception as ex:
             logging.error(ex)
+            return (None,str(ex)) 
         finally:
             self.postgreSQL_pool.putconn(ps_connection)    
 
@@ -92,14 +93,14 @@ class DbExecuter:
                 query = f"INSERT INTO public.{tableName} ( {columns}) VALUES %s"
 
                 psycopg2.extras.execute_values(ps_cursor,query,  [tuple(results.values())] )      
-                ps_connection.commit()
+                res = ps_connection.commit()
                 logging.info("result committed returning ps_connection to pool")
-                return (True,None)
+                return (res,None)
                 
                         
         except Exception as ex:
             logging.error(ex)
-            return (False,str(ex))
+            return (None,str(ex))
 
         finally:
             self.postgreSQL_pool.putconn(ps_connection)   
@@ -127,17 +128,17 @@ class DbExecuter:
                 # val1 = ps_cursor.fetchall()
                 # #val = [t[0] for t in ps_cursor.fetchall()]
                 logging.info("result committed returning ps_connection to pool")
-                return (True,None)
+                return (None,None)
                 
                         
         except Exception as ex:
             logging.error(ex)
-            return (False,str(ex))
+            return (None,str(ex))
 
         finally:
             self.postgreSQL_pool.putconn(ps_connection)    
 
-    def execute(self, query, fetch = False) -> query_response:
+    def execute(self, query, args) -> query_response:
         '''
         execute query
         :return:
@@ -151,18 +152,15 @@ class DbExecuter:
                 logging.info("successfully received connection from connection pool ")
                 ps_cursor = ps_connection.cursor()
 
-                ps_cursor.execute(query)
-                val1 = None
-                if fetch:
-                    val1 = ps_cursor.fetchall()
+                ps_cursor.execute(query,args)
                 ps_connection.commit()
                 logging.info("result committed returning ps_connection to pool")
-                return (True,val1)
+                return (None,None)
                 
                         
         except Exception as ex:
             logging.error(ex)
-            return (False,str(ex))
+            return (None,str(ex))
 
         finally:
             self.postgreSQL_pool.putconn(ps_connection)        

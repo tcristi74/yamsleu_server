@@ -1,5 +1,6 @@
 from typing import List,Dict
 Strings = List[str]
+recordset = List[tuple]
 
 class DbHelper:
     
@@ -29,3 +30,14 @@ class DbHelper:
             else: 
                 raise TypeError(f"can't find the type for key:{k}, value: {dic[k]}") 
         return ret_list
+
+    @staticmethod
+    def recordset_to_dic(columns:List,records:recordset)->Dict:
+        rows = []
+        for r in records:
+            # r is a tuple
+            row = {}
+            for i in range(len(r)):
+                row[columns[i]]=r[i]
+            rows.append(row)
+        return rows

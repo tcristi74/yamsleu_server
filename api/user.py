@@ -15,13 +15,12 @@ class User(Resource):
     # is a GET request for this resource 
 
   
-    def get(self,name): 
-        response = make_response(jsonify({"name":name}),200 )
+    def get(self,user_id): 
+        db_user = DbUser(DbConfig())
+        res_val_db=db_user.get_user(userid=user_id)
+        response = make_response(jsonify({"response":res_val_db}),200 )
         return response
-        # if (name!='cristi'):
-        #     return jsonify({'message': f'get {name} user'})
-        # else: 
-        #     abort(404, message=json.dumps({'message':"user doesn't exit"}))
+
 
     def put(self,user_id): 
         req_body = request.get_json()     # status code
