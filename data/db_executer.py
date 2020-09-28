@@ -74,36 +74,36 @@ class DbExecuter:
             self.postgreSQL_pool.putconn(ps_connection)    
 
 
-    def insert_many(self, results, tableName) -> query_response:
-        """
-        write multiple records to db using exzecte values
-        :param results: array of rows to be written to databse
-        :return:
-        """
-        # get postgres connection
+    # def insert_many(self, results, tableName) -> query_response:
+    #     """
+    #     write multiple records to db using exzecte values
+    #     :param results: array of rows to be written to databse
+    #     :return:
+    #     """
+    #     # get postgres connection
        
-        logging.info("inserting {0} recs into postgres".format(len(results)))
-        ps_connection = self.get_connection()
-        try:
-            if ps_connection:
-                logging.info("successfully received connection from connection pool ")
-                ps_cursor = ps_connection.cursor()
+    #     logging.info("inserting {0} recs into postgres".format(len(results)))
+    #     ps_connection = self.get_connection()
+    #     try:
+    #         if ps_connection:
+    #             logging.info("successfully received connection from connection pool ")
+    #             ps_cursor = ps_connection.cursor()
 
-                columns = ",".join(map(str, results.keys()))
-                query = f"INSERT INTO public.{tableName} ( {columns}) VALUES %s"
+    #             columns = ",".join(map(str, results.keys()))
+    #             query = f"INSERT INTO public.{tableName} ( {columns}) VALUES %s"
 
-                psycopg2.extras.execute_values(ps_cursor,query,  [tuple(results.values())] )      
-                res = ps_connection.commit()
-                logging.info("result committed returning ps_connection to pool")
-                return (res,None)
+    #             psycopg2.extras.execute_values(ps_cursor,query,  [tuple(results.values())] )      
+    #             res = ps_connection.commit()
+    #             logging.info("result committed returning ps_connection to pool")
+    #             return (res,None)
                 
                         
-        except Exception as ex:
-            logging.error(ex)
-            return (None,str(ex))
+    #     except Exception as ex:
+    #         logging.error(ex)
+    #         return (None,str(ex))
 
-        finally:
-            self.postgreSQL_pool.putconn(ps_connection)   
+    #     finally:
+    #         self.postgreSQL_pool.putconn(ps_connection)   
 
     def insert_one_record(self, results, tableName) -> query_response:
         '''

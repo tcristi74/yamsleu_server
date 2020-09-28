@@ -1,10 +1,13 @@
 -- Table: public.users
 
 -- DROP TABLE public.users;
+CREATE SEQUENCE users_id_seq INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+GRANT ALL ON sequence public.users_id_seq TO ctudosestroe;
+
 
 CREATE TABLE public.users
 (
-    id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass) ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass) ,
     email_address character varying(100) COLLATE pg_catalog."default",
     last_name character varying(50) COLLATE pg_catalog."default",
     first_name character varying(50) COLLATE pg_catalog."default",
@@ -37,12 +40,29 @@ CREATE UNIQUE INDEX users_lower_idx
 -- Trigger: users_table
 
 -- DROP TRIGGER users_table ON public.users;
+CREATE OR REPLACE FUNCTION modified_at_changes()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL  
+  AS
+$$
+BEGIN
+	IF NEW.MODIFIED_AT = OLD.MODIFIED_AT THEN
+		--UPDATE GAMES
+		--SET MODIFIED_AT =  now() at time zone 'utc'
+		--where id = NEW.id;
+		NEW.MODIFIED_AT := now() at time zone 'utc';
+	END IF;
+	return NEW;
+END;
+$$
 
 -- this trigger might need to be changed as it writes data in local time, not UTC
 CREATE TRIGGER users_table
     BEFORE UPDATE 
     ON public.users
     FOR EACH ROW
-    EXECUTE PROCEDURE public.moddatetime(modified_at\000);
+    EXECUTE PROCEDURE public.modified_at_changes();
 
-GRANT ALL ON sequence public.users_id_seq TO ctudosestroe;
+alter table users
+	add column is_deprecated BOOLEAN;
+	

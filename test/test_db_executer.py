@@ -11,7 +11,6 @@ import pathlib
 sys.path.append(str(pathlib.Path(os.path.abspath(__file__)).parent.parent))
 from data.db_executer import DbExecuter
 from data.db_config import DbConfig
-from data.db_user import DbUser
 
 
 def insert_one_record():

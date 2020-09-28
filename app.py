@@ -7,6 +7,9 @@ import re
 from api import users
 from api import user
 import logging
+import logging.config
+logging.config.fileConfig('logging.conf')
+logging.getLogger(__name__)
 
 
 
