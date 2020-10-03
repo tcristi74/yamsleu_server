@@ -7,18 +7,38 @@ from typing import Tuple,List
 query_response = Tuple[object, str]
 users_list = List[int]
 
-class DbPlay(DbExecuter):
+class DbGame(DbExecuter):
     def __init__(self,db_config_instance :DbConfig):
         super().__init__(db_config_instance)
+
+    def new_game(self,game_name:str = None,game_comments:str =None) ->query_response :
+        logging.debug(f"Create new game")
+
+        query = f"insert into public.games(game_name,game_comments) values ( %s,%s) RETURNING id;"
+        res = super().execute(query,(game_name ,game_comments ),True)
+        return res
+
+
+    def update_game(self,dic_fields: any,game_id:int ) ->query_response :
+        logging.debug(f"Create new game")
+
+        res = super().update_records("games",dic_fields,{"id":game_id})
+        if res[1]!=None:
+            return res
     
     def new_play(self,users:users_list, game_id:int) ->query_response :
         logging.debug(f"Create new play for users ids{ ','.join(map(str,users))}")
         tabel=self.__create_tabel()
+        ids= []
+        for user_id in users:
+            obj = {"game_id" : game_id, "user_id": user_id,"play_table" : json.dumps(tabel)}
+            res = super().insert_one_record(obj,"plays","user_id")
+            if res[1]!=None:
+                return res
+            ids.append(res[0])
+        return (ids,None)
 
-        obj = {"game_id" : game_id, "user_id": users[0],"play_table" : json.dumps(tabel)}
-        res = super().insert_one_record(obj,"plays")
-        #logging.debug(f"port result:{res}")
-        return res
+        
 
     def __create_tabel(self):
         play = {"tabel":[],"history":[]}
@@ -30,6 +50,8 @@ class DbPlay(DbExecuter):
                 obj[r]=None
             play["tabel"].append(obj)
         return play
+
+
 
         
 

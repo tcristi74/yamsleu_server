@@ -4,6 +4,7 @@ from psycopg2 import extras
 import logging
 from .db_config import DbConfig
 from typing import Tuple
+import numbers
 
 query_response = Tuple[object, str]
 
@@ -41,7 +42,7 @@ class DbExecuter:
                 logging.error("failed to connect to timescale db")
                 raise Exception("failed to establish connection to timescale db")
 
-    def get_query(self, query,args,fetch_results = False) ->query_response:
+    def get_query(self, query,args) ->query_response:
         """
         execute query
         :param results: array of rows to be written to databse
@@ -96,6 +97,13 @@ class DbExecuter:
     #             res = ps_connection.commit()
     #             logging.info("result committed returning ps_connection to pool")
     #             return (res,None)
+
+    #             # ps_cursor = ps_connection.cursor()
+    #             #     #query = f"INSERT INTO public.{tableName} (time, CID, api_name,value) VALUES %s"
+    #             #     query = f"INSERT INTO public.{tableName} VALUES(%s,%s,%s,%s)"
+    #             #     # write batch
+    #             #     psycopg2.extras.execute_batch(ps_cursor, query, results)
+    #             #     ps_connection.commit()
                 
                         
     #     except Exception as ex:
@@ -105,7 +113,7 @@ class DbExecuter:
     #     finally:
     #         self.postgreSQL_pool.putconn(ps_connection)   
 
-    def insert_one_record(self, results, tableName) -> query_response:
+    def insert_one_record(self, results, tableName, return_column) -> query_response:
         '''
         write information to db
         :param results: array of rows to be written to databse
@@ -115,6 +123,7 @@ class DbExecuter:
        
         logging.info("inserting {0} recs into postgres".format(len(results)))
         ps_connection = self.get_connection()
+        ret_val=None
         try:
             if ps_connection:
                 logging.info("successfully received connection from connection pool ")
@@ -123,10 +132,52 @@ class DbExecuter:
                 columns = ",".join(map(str, results.keys()))
                 vaa = ','.join(map(str,['%s' for i in range(len(results))]))
                 query = f"INSERT INTO public.{tableName} ( {columns}) VALUES ({vaa})"
+                if return_column:
+                    query+=f" RETURNING {return_column};"
                 ps_cursor.execute(query,tuple(results.values()))
+                if return_column:
+                    ret_val= ps_cursor.fetchone()[0]
                 ps_connection.commit()
-                # val1 = ps_cursor.fetchall()
-                # #val = [t[0] for t in ps_cursor.fetchall()]
+                logging.info("result committed returning ps_connection to pool")
+                return (ret_val,None)
+                
+                        
+        except Exception as ex:
+            logging.error(ex)
+            return (None,str(ex))
+
+        finally:
+            self.postgreSQL_pool.putconn(ps_connection)    
+
+    def update_records(self, tableName,fields,conditions) -> query_response:
+        '''
+        write information to db
+        :param results: array of rows to be written to databse
+        :return:
+        '''
+        # get postgres connection
+       
+        logging.info("updating table {tablename}")
+        ps_connection = self.get_connection()
+        try:
+            if ps_connection:
+                logging.info("successfully received connection from connection pool ")
+                ps_cursor = ps_connection.cursor()
+
+
+                #vaa = ','.join(map(str,[self.nullable_db_string()  for i in range(len(fields))]))
+                query = f"update public.{tableName} set " + \
+                    ",".join(map(str, [fields.keys()[i]+ " = %s " for i in range(len(fields.keys()))]))
+                args_list = fields.values()
+                if conditions is not None and len(conditions)>0:
+                    query+=" where " + \
+                         " and ".join(map(str, [conditions.keys()[i]+ " = %s " for i in range(len(conditions.keys()))]))
+                    args_list+=conditions.values()
+
+                ps_cursor.execute(query,tuple(args_list))
+
+                ps_connection.commit()
+    
                 logging.info("result committed returning ps_connection to pool")
                 return (None,None)
                 
@@ -138,7 +189,7 @@ class DbExecuter:
         finally:
             self.postgreSQL_pool.putconn(ps_connection)    
 
-    def execute(self, query, args) -> query_response:
+    def execute(self, query, args,fetch = False) -> query_response:
         '''
         execute query
         :return:
@@ -147,15 +198,18 @@ class DbExecuter:
        
         logging.info("execute query postgres")
         ps_connection = self.get_connection()
+        ret_val=None
         try:
             if ps_connection:
                 logging.info("successfully received connection from connection pool ")
                 ps_cursor = ps_connection.cursor()
 
                 ps_cursor.execute(query,args)
+                if fetch:
+                    ret_val= ps_cursor.fetchone()[0]
                 ps_connection.commit()
                 logging.info("result committed returning ps_connection to pool")
-                return (None,None)
+                return (ret_val,None)
                 
                         
         except Exception as ex:
@@ -169,3 +223,12 @@ class DbExecuter:
         if self.postgreSQL_pool:
             logging.info("closing all db resources!!")
             self.postgreSQL_pool.closeall()
+
+    def nullable_db_val(self,val :str):
+
+        if val is None or val=="":
+            return None
+        elif (isinstance(val, numbers.Number)):
+            return float(val)
+        else:
+            return val.replace("'","''") 

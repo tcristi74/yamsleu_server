@@ -6,7 +6,7 @@ CREATE TABLE public.games
 (
     id integer NOT NULL DEFAULT nextval('games_id_seq'::regclass) ,
     game_name character varying(50) COLLATE pg_catalog."default",
-	started_at timestamp without time zone NOT NULL DEFAULT timezone('UTC'::text, clock_timestamp()),
+	started_at timestamp without time zone ,
 	ended_at timestamp without time zone ,
 	status character varying(20) COLLATE pg_catalog."default",
 	game_comments character varying(250) COLLATE pg_catalog."default",

@@ -10,15 +10,22 @@ import pathlib
 #     str(pathlib.Path(os.path.abspath(__file__)).parent.parent), "data"))
 sys.path.append(str(pathlib.Path(os.path.abspath(__file__)).parent.parent))
 from data.db_config import DbConfig
-from data.db_play import DbPlay
+from data.db_game import DbGame
 
 
-def create_play():
+def create_play(game_id):
 
-    db_play = DbPlay(db_config_instance)
-    res1 = db_play.new_play([1],1)
-    return res1
+    db_play = DbGame(db_config_instance)
+    res = db_play.new_play([10,11],game_id)
+    assert (res[1]==None),f"error:{res[1]}"
+    return res[0]
 
+def create_game():
+
+    db_play = DbGame(db_config_instance)
+    res = db_play.new_game("game test' 1")
+    assert (res[1]==None),f"error:{res[1]}"
+    return res[0]
 
 
 
@@ -32,8 +39,10 @@ if __name__ == "__main__":
     db_config_instance = DbConfig()
     email_id = f"test_{random.randint(10000,300000)}" 
 
-    ret= create_play()
-    assert (ret[1]==None),f"error:{ret[1]}"
+    new_game_id = create_game()
+    ret= create_play(new_game_id)
+    print (ret)
+
 
 
     
