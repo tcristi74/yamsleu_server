@@ -31,7 +31,7 @@ class DbUser(DbExecuter):
         #obj = {"first_name" : "Oceanna", "last_name": "Tudose", "email_address" : "oceanna@abs.com", "skill_level":4}
         if "skill_level" not in user_obj:
             user_obj["skill_level"]=1
-        res = super().insert_one_record(user_obj,"users")
+        res = super().insert_one_record(user_obj,"users","id")
         #logging.debug(f"port result:{res}")
         return res
 
