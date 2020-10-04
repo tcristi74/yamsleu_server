@@ -1,5 +1,7 @@
 # yams-leu
-yams-leu = Yahtzee style game, but way more complex. Though it's played with five dices, it is all about strategy. Yes, luck might be involved and sometimes badly needed but the game is closer to chess that craps I would say.
+yams-leu = Yahtzee style game, but way more complex. 
+
+Despite the fact that it's played with five dices, it is all about strategy. Yes, luck might be involved and sometimes badly needed but the game is closer to chess that craps I would say.
 
 ---
 ## Quick History
