@@ -1,10 +1,10 @@
 # yams-leu
 yams-leu = Yahtzee style game, but way more complex. 
 
-Despite the fact that it's played with five dices, it is all about strategy. Yes, luck might be involved and sometimes badly needed but the game is closer to chess that craps I would say.
+It's played with five dices, but it's all about strategy. Yes, luck might be involved and sometimes badly needed, but the game is closer to chess that craps.
 
 ---
-## Quick History
+## Quick Historymore 
 
 We used to play this game in the late 90's while living in my home city of Bucharest. It started while I was a student at Politehnica, playing mostly in two of the university cafeterias :TCM and Leu. Strangely enough, the game in each cafeteria was a little different. 
 
