@@ -40,3 +40,6 @@ alter table public.games
    add CONSTRAINT fk_winner
       FOREIGN KEY(winner_id) 
 	  REFERENCES public.users(id);
+
+alter table public.games
+	add column marked_for_deletion BOOLEAN;

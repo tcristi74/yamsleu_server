@@ -19,13 +19,7 @@ class DbUser(DbExecuter):
         if (recordset[1]!=None):
             return recordset
         rows = DbHelper.recordset_to_dic(columns,recordset[0])
-        # rows = []
-        # for r in recordset[0]:
-        #     # r is a tuple
-        #     row = {}
-        #     for i in range(len(r)):
-        #         row[columns[i]]=r[i]
-        #     rows.append(row)
+
         return (rows,None)
 
 

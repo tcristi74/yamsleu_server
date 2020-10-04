@@ -16,7 +16,6 @@ class DbExecuter:
     def __init__(self,  db_config_instance:DbConfig):
         '''
         initializes db configuration and postgres connection pool
-        :param logger: logger for writing logs
         '''
         db_config= db_config_instance.get_config()
         # initialize connection pool
@@ -45,7 +44,6 @@ class DbExecuter:
     def get_query(self, query,args) ->query_response:
         """
         execute query
-        :param results: array of rows to be written to databse
         :return: a collection
         """
         
@@ -73,6 +71,45 @@ class DbExecuter:
             return (None,str(ex)) 
         finally:
             self.postgreSQL_pool.putconn(ps_connection)    
+
+    # def get_query2(self, tableName,columns,conditions) -> query_response:
+    #     '''
+    #     get info from table
+    #     '''
+    #     # get postgres connection
+       
+    #     logging.info(f"querying table {tableName}")
+    #     ps_connection = self.get_connection()
+    #     try:
+    #         if ps_connection:
+    #             logging.info("successfully received connection from connection pool ")
+    #             ps_cursor = ps_connection.cursor()
+    #             columns_as_string = ",".join(map(str,columns))
+    #             fields_names   = list(fields.keys())
+    #             conditions_names = list(conditions.keys())
+    #             #vaa = ','.join(map(str,[self.nullable_db_string()  for i in range(len(fields))]))
+    #             query = f"select {columns_as_string} public.{tableName} set " + \
+    #                 ",".join(map(str, [fields_names[i]+ " = %s " for i in range(len(fields_names))]))
+    #             args_list = list(fields.values())
+    #             if conditions is not None and len(conditions)>0:
+    #                 query+=" where " + \
+    #                      " and ".join(map(str, [conditions_names[i]+ " = %s " for i in range(len(conditions_names))]))
+    #                 args_list+=list(conditions.values())
+
+    #             ps_cursor.execute(query,tuple(args_list))
+
+    #             ps_connection.commit()
+    
+    #             logging.info("result committed returning ps_connection to pool")
+    #             return (None,None)
+                
+                        
+    #     except Exception as ex:
+    #         logging.error(ex)
+    #         return (None,str(ex))
+
+    #     finally:
+    #         self.postgreSQL_pool.putconn(ps_connection)  
 
 
     # def insert_many(self, results, tableName) -> query_response:
@@ -113,7 +150,7 @@ class DbExecuter:
     #     finally:
     #         self.postgreSQL_pool.putconn(ps_connection)   
 
-    def insert_one_record(self, results, tableName, return_column) -> query_response:
+    def insert_one_record(self, results, tableName:str, return_column:str=None) -> query_response:
         '''
         write information to db
         :param results: array of rows to be written to databse
@@ -157,22 +194,23 @@ class DbExecuter:
         '''
         # get postgres connection
        
-        logging.info("updating table {tablename}")
+        logging.info(f"updating table {tableName}")
         ps_connection = self.get_connection()
         try:
             if ps_connection:
                 logging.info("successfully received connection from connection pool ")
                 ps_cursor = ps_connection.cursor()
 
-
+                fields_names   = list(fields.keys())
+                conditions_names = list(conditions.keys())
                 #vaa = ','.join(map(str,[self.nullable_db_string()  for i in range(len(fields))]))
                 query = f"update public.{tableName} set " + \
-                    ",".join(map(str, [fields.keys()[i]+ " = %s " for i in range(len(fields.keys()))]))
-                args_list = fields.values()
+                    ",".join(map(str, [fields_names[i]+ " = %s " for i in range(len(fields_names))]))
+                args_list = list(fields.values())
                 if conditions is not None and len(conditions)>0:
                     query+=" where " + \
-                         " and ".join(map(str, [conditions.keys()[i]+ " = %s " for i in range(len(conditions.keys()))]))
-                    args_list+=conditions.values()
+                         " and ".join(map(str, [conditions_names[i]+ " = %s " for i in range(len(conditions_names))]))
+                    args_list+=list(conditions.values())
 
                 ps_cursor.execute(query,tuple(args_list))
 
