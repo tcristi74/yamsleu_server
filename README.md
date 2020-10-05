@@ -6,9 +6,7 @@ It's played with five dices, but it's all about strategy. Yes, luck might be inv
 ---
 #### Quick History
 
-Please visit this page: https://github.com/tcristi74/yamsleu_server/wiki/Why
-
-
+For a bit of the game obscure history please visit [this page](https://github.com/tcristi74/yamsleu_server/wiki/Why)
 
 
 
