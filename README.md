@@ -1,3 +1,5 @@
+<img src="https://img.shields.io/badge/made%20with-python-blue.svg" alt="made with python"> <img src="https://img.shields.io/github/license/tcristi74/yamsleu_server" alt ="licence"> <img src="https://img.shields.io/github/forks/tcristi74/yamsleu_server" alt ="forks"> <img src="https://img.shields.io/github/stars/tcristi74/yamsleu_server" alt ="stars"> <img src="https://img.shields.io/github/last-commit/tcristi74/yamsleu_server" alt ="stars"> [![dependencies](https://david-dm.org/bahmutov/xplain.png)](https://david-dm.org/bahmutov/xplain)
+
 # yams-leu
 yams-leu = Yahtzee style game, but way more complex. 
 
