@@ -11,7 +11,7 @@ class DbUser(DbExecuter):
     
     def get_user(self,userid:int=None, email:str=None) ->query_response :
         logging.debug(f"get user for userid={userid} or email:{email}")
-        columns = ["id", "first_name", "last_name","email_address","skill_level"]
+        columns = ["id", "first_name", "last_name","email_address","skill_level","is_deprecated"]
         columns_as_string = ",".join(map(str,columns))
         query = f"select {columns_as_string} from users where {'id' if userid !=None else 'email_address'}= %s"
         val_tuple = tuple([(userid if userid !=None else email)])

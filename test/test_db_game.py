@@ -6,116 +6,92 @@ from dotenv import load_dotenv
 import sys
 import os
 import pathlib
-# sys.path.append(os.path.join(
-#     str(pathlib.Path(os.path.abspath(__file__)).parent.parent), "data"))
 sys.path.append(str(pathlib.Path(os.path.abspath(__file__)).parent.parent))
-from data.db_config import DbConfig
-from data.db_game import DbGame
+from data.db_config import DbConfig # pylint: disable=F0401
+from data.db_game import DbGame # pylint: disable=F0401
 import datetime
+import pytest
 
-
-
-def create_game():
-
-    db_play = DbGame(db_config_instance)
-    res = db_play.new_game("game test 18")
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def update_game(update_dic, game_id):
-
-    db_play = DbGame(db_config_instance)
-    res = db_play.update_game(update_dic,game_id)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def create_play(game_id):
-
-    db_play = DbGame(db_config_instance)
-    res = db_play.new_play([10,11],game_id)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def update_play(update_dic,game_id,user_id):
-    db_play = DbGame(db_config_instance)
-    res = db_play.update_play(update_dic,game_id,user_id)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def update_tabel(game_id,user_id):
-    db_play = DbGame(db_config_instance)
-    res = db_play.update_tabel("I1","3",game_id,user_id,9)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def get_plays(game_id):
-    db_play = DbGame(db_config_instance)
-    res = db_play.get_game_plays(game_id)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-def get_games_with_filters(filters):
-    db_play = DbGame(db_config_instance)
-    res = db_play.get_games(filters)
-    assert (res[1]==None),f"error:{res[1]}"
-    return res[0]
-
-
-if __name__ == "__main__":
-    # logging.config.fileConfig('logging.conf')
-    logging.basicConfig(filename='info.log', level=logging.INFO)
-    logging.getLogger(__name__)
-    load_dotenv()
-
-    logging.debug("Start")
+@pytest.fixture()
+def db_play():
+    print("setup")
     db_config_instance = DbConfig()
-    email_id = f"test_{random.randint(10000,300000)}"
-
-    new_game_id = create_game()
-    ret = create_play(new_game_id)
-    player_id = ret[0]
-    update_dic = {
-                  "started_at": datetime.datetime.now(),
-                  "status": "started",
-                  "game_comments": "this is a test",
-                  "winner_id": player_id,
-                  "score": 1000
-                  }
-    ret = update_game(update_dic, new_game_id)
-
-    update_dic = {
-                  "started_at": datetime.datetime.now(),
-                  "status": "started",
-                  "game_comments": "this is a test",
-                  "winner_id": None,
-                  "score": 1000
-                  }
-    ret = update_game(update_dic, new_game_id)
+    db_play = DbGame(db_config_instance)
+    yield db_play
+    print("teardown")
 
 
-    update_dic = {
+@pytest.fixture()
+def users_ids():
+    print("setup")
+    db_config_instance = DbConfig()
+    db_play = DbGame(db_config_instance)
+    res = db_play.get_query("select * from public.users  limit 100")
+    assert res[1]==None
+    assert len(res[0][0])>2
+    limit = min(len(res[0]),100)
+    id = random.randint(0,limit-2)
+
+    user1=res[0][id][0]
+    user2=res[0][id+1][0]
+
+    yield (user1,user2)
+    print("teardown")
+
+class TestDbGames():
+
+    def test_create_game(self,db_play):
+
+        res = db_play.new_game("game test 18")
+        assert res[1]==None
+        assert int(res[0])>0
+        pytest.game_id=res[0]
+
+    
+    def test_create_play(self,db_play,users_ids):
+
+        res = db_play.new_play([users_ids[0],users_ids[1]],pytest.game_id)
+        assert res[1]==None
+        pytest.player_id=res[0][0]
+
+    def test_update_game(self,db_play,users_ids):
+        update_dic = {
+                    "started_at": datetime.datetime.now(),
+                    "status": "started",
+                    "game_comments": "this is a test",
+                    "winner_id": pytest.player_id,
+                    "score": 1000
+                    }
+        res = db_play.update_game(update_dic,pytest.game_id)
+        assert res[1]==None
+
+
+
+    def test_update_play(self,db_play,users_ids):
+
+        update_dic = {
                   "current_position": -1,
                   "comments": "this is a test",
                   "current_score": 1000
                   }
-    ret = update_play(update_dic, new_game_id,player_id)
+        res = db_play.update_play(update_dic,pytest.game_id,users_ids[0])
+        assert res[1]==None
 
-    ret = update_tabel(new_game_id,player_id)
+    def test_update_tabel(self,db_play,users_ids):
+        res = db_play.update_tabel("I1","3",pytest.game_id,users_ids[0],9)
+        assert res[1]==None
 
-    ret = get_plays(new_game_id)
-
-    ret = get_games_with_filters({
-                  "plays.user_id": 11
-                  })
-    
-    ret = get_games_with_filters({
-                  "id": 56
-                  })
+    def test_get_plays(self,db_play):
+        res = db_play.get_game_plays(pytest.game_id)
+        assert res[1]==None
 
 
-
-
-    print(ret)
+    def test_get_games_with_filters(self,db_play,users_ids):
+        filters = {
+                  "plays.user_id": users_ids[0]
+                  }
+        res = db_play.get_games(filters)
+        assert res[1]==None
 
 
 

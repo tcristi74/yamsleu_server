@@ -41,7 +41,7 @@ class DbExecuter:
                 logging.error("failed to connect to timescale db")
                 raise Exception("failed to establish connection to timescale db")
 
-    def get_query(self, query,args) ->query_response:
+    def get_query(self, query,args=None) ->query_response:
         """
         execute query
         :return: a collection
