@@ -26,7 +26,7 @@ def users_ids():
     print("setup")
     db_config_instance = DbConfig()
     db_play = DbGame(db_config_instance)
-    res = db_play.get_query("select * from public.users  limit 100")
+    res = db_play.get_query("select * from public.users limit 100")
     assert res[1]==None
     assert len(res[0][0])>2
     limit = min(len(res[0]),100)

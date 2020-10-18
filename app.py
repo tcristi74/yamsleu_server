@@ -6,6 +6,9 @@ from datetime import datetime
 import re
 from api import users
 from api import user
+from api import games
+
+
 import logging
 import logging.config
 logging.config.fileConfig('logging.conf')
@@ -20,6 +23,11 @@ api = Api(app)
 api.add_resource(user.User, '/users/<int:user_id>')
 api.add_resource(users.Users, '/users') 
 
+
+
+api.add_resource(games.Games, '/games') 
+api.add_resource(games.Game, '/games/<int:game_id>')
+api.add_resource(games.GameUser, '/games/<int:game_id>/<int:user_id>')
 
 # @app.route('/')
 # def index():

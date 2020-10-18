@@ -6,18 +6,27 @@ from data.db_config import DbConfig
 
 class Users(Resource):
 
-    def get(self): 
-        parser = reqparse.RequestParser()
+    def get(self):        
         args = request.args
         print (args)
+        db_user = DbUser(DbConfig())
         if "filters" in args and args["filters"].lower()=="true":
             data = request.get_json() 
-            if "email_address" in data:
-                db_user = DbUser(DbConfig())
+            if "email_address" in data:           
                 res_val_db=db_user.get_user(email=data["email_address"])
-                response = make_response(jsonify({"response":res_val_db}),200 )
+                
         else:
-            response= jsonify({'error': 'no filter param'}) 
+            limit = 100 if "limit" not in args else int(args["limit"]) 
+            offset = 0 if "offset" not in args else int(args["offset"])
+            order_by = "first_name" if "orderby" not in args else str(args["orderby"])
+            res_val_db=db_user.get_users(order_by,limit,offset)
+        if res_val_db[1] is not None:
+            return make_response(jsonify({"error":res_val_db[1]}),400 )
+
+        response = make_response(jsonify(res_val_db[0]),200)
+
+
+
         return response
 
     # Corresponds to POST request 
@@ -27,7 +36,7 @@ class Users(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('type', help='detail or summary')
         #parser.add_argument('year',type=int, help='detail or summary')
-        args = parser.parse_args()
+        #args = parser.parse_args()
         # db_user  = 
         
         db_user = DbUser(DbConfig())

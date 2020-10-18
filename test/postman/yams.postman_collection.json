@@ -78,7 +78,7 @@
 						"exec": [
 							"var jsonData = JSON.parse(responseBody);",
 							"",
-							"postman.setEnvironmentVariable(\"user_id\", jsonData[\"response\"][0][0].id);",
+							"postman.setEnvironmentVariable(\"user_id\", jsonData[0].id);",
 							""
 						],
 						"type": "text/javascript"
@@ -93,7 +93,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"first_name\" : \"Oce_test\", \"last_name\": \"Tudose\", \"email_address\" : \"{{v_email}}\", \"skill_level\":4}",
+					"raw": "{\"email_address\" : \"{{v_email}}\"}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -133,6 +133,38 @@
 					"path": [
 						"users",
 						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getusers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/users?offset=0&limit=100&orderby=id",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "offset",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "100"
+						},
+						{
+							"key": "orderby",
+							"value": "id"
+						}
 					]
 				}
 			},
@@ -214,6 +246,306 @@
 					"path": [
 						"users",
 						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Game Post",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ff02449a-7911-41c4-8ec1-9120976c6804",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e5e97b44-c89c-48b5-818b-048db14d485b",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"    postman.setEnvironmentVariable(\"game_id\", jsonData.game_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"game_name\": \"this is new game Oct00\", \"comment\": \"this is a comment\" ,\"users\" : [{{user_id}},{{user_id2}}]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/games",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetGame",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1d137555-3809-4918-9f6e-7a33795d4b58",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0ebb139d-da97-449d-b508-8d2814cee159",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/games/{{game_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games",
+						"{{game_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtered Games",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6e7e6df5-5a7f-47f5-b554-f2361200b4b4",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "02178ae0-6b38-47ed-8296-3744cd11ee9e",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"plays.user_id\": \"{{user_id2}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/games",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutGame",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "036bd525-4782-4dfd-92f5-b1479ca96d59",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "95bd0d4c-e519-436c-9bfa-c87bd5c01939",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"started\",\n    \"game_comments\": \"this is a test\",\n    \"winner_id\": {{user_id2}},\n    \"score\": 1001\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/games/{{game_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games",
+						"{{game_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Put Game User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cd59d5cd-c107-411d-a99e-9375dc1142c0",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1f2b5e1e-846c-413f-90eb-10b41cddb2c1",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"current_position\": -1,\n    \"comments\": \"this is a testsss\",\n    \"current_score\": 1000\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/games/{{game_id}}/{{user_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games",
+						"{{game_id}}",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Play tabel",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f2073901-1938-4281-b8cc-71275725df90",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "296b3f8e-5622-4f6b-a630-d28627387e3c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"column_name\": \"I1\",\n    \"row_name\": \"3\",\n    \"value\": 9\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/games/{{game_id}}/{{user_id}}?recalculate=true",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"games",
+						"{{game_id}}",
+						"{{user_id}}"
+					],
+					"query": [
+						{
+							"key": "recalculate",
+							"value": "true"
+						}
 					]
 				}
 			},

@@ -19,12 +19,19 @@ class DbUser(DbExecuter):
         if (recordset[1]!=None):
             return recordset
         rows = DbHelper.recordset_to_dic(columns,recordset[0])
-
         return (rows,None)
 
 
-    def get_users(self):
-        logging.debug("get users")
+    def get_users(self,order_by_column:str, limit:int=500,offset:int=0) ->query_response:
+        logging.debug(f"get users by {order_by_column}")
+        columns = ["id", "first_name", "last_name","email_address","skill_level","is_deprecated"]
+        columns_as_string = ",".join(map(str,columns))
+        query = f"select {columns_as_string} from public.users  order by {order_by_column} limit %s offset %s"
+        recordset=super().get_query(query,(limit,offset,))
+        if (recordset[1]!=None):
+            return recordset
+        rows = DbHelper.recordset_to_dic(columns,recordset[0])
+        return (rows,None)
 
     def post_user(self, user_obj:object) -> query_response:
         logging.debug("post user")
