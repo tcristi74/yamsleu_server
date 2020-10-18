@@ -35,7 +35,7 @@ class DbUser(DbExecuter):
         #logging.debug(f"port result:{res}")
         return res
 
-    def put_user(self, user_obj:object, id :int) -> query_response:
+    def put_user(self, user_obj:object, id :int,fetch:bool = False) -> query_response:
         """
         Example 
         update users 
@@ -50,9 +50,9 @@ class DbUser(DbExecuter):
         set_conditions= DbHelper.dic_to_string(user_obj, ["id"])
         changes=", ".join(map(str,set_conditions))
     
-        query = f"update users set {changes} where id={id}"
+        query = f"update users set {changes} where id=%s"
 
-        res = super().execute(query,False)
+        res = super().execute(query,(id,),fetch)
         #logging.debug(f"port result:{res}")
         return res
 

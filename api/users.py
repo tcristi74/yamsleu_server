@@ -7,7 +7,18 @@ from data.db_config import DbConfig
 class Users(Resource):
 
     def get(self): 
-        return jsonify({'message': 'get all users'}) 
+        parser = reqparse.RequestParser()
+        args = request.args
+        print (args)
+        if "filters" in args and args["filters"].lower()=="true":
+            data = request.get_json() 
+            if "email_address" in data:
+                db_user = DbUser(DbConfig())
+                res_val_db=db_user.get_user(email=data["email_address"])
+                response = make_response(jsonify({"response":res_val_db}),200 )
+        else:
+            response= jsonify({'error': 'no filter param'}) 
+        return response
 
     # Corresponds to POST request 
     def post(self): 
@@ -21,7 +32,7 @@ class Users(Resource):
         
         db_user = DbUser(DbConfig())
         res_val = db_user.post_user(data)
-        ret_body = {"success": res_val[0]}
+        ret_body = {"id": res_val[0]}
         if not res_val[0]:
             ret_body["error"] = res_val[1]
 

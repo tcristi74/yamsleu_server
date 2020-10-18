@@ -12,7 +12,7 @@ class Game(Resource):
     # is a GET request for this resource 
   
     def get(self,game_id): 
-        if (name!='cristi'):
+        if (game_id!='cristi'):
             return jsonify({'message': f'get {name} user'})
         else: 
             abort(404, message=json.dumps({'message':"user doesn't exit"}))
@@ -24,7 +24,7 @@ class Game(Resource):
 
 
 
-class Users(Resource):
+class Games(Resource):
 
     def get(self): 
         return jsonify({'message': 'get all users'}) 

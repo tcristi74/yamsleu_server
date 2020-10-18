@@ -1,0 +1,224 @@
+{
+	"info": {
+		"_postman_id": "00ec2621-f893-4bd4-95b0-3c06fbb9f098",
+		"name": "yams",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Post",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0db3aa20-9bd2-41e7-81eb-332d282749bb",
+						"exec": [
+							"pm.environment.set(\"v_email\", \"test\"+ _.random(10000, 50000)+\"@google.com\")",
+							"console.log()"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "29a66072-fe9c-4eb5-99de-8338a922f96b",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"    postman.setEnvironmentVariable(\"user_id\", jsonData.id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\" : \"Oce_test\", \"last_name\": \"Tudose\", \"email_address\" : \"{{v_email}}\", \"skill_level\":4}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Get By Filter",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "977e5c9a-32a4-4b0a-a84e-00d8b598d3bf",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ca5065f3-668a-49d4-9815-970550a34258",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"postman.setEnvironmentVariable(\"user_id\", jsonData[\"response\"][0][0].id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\" : \"Oce_test\", \"last_name\": \"Tudose\", \"email_address\" : \"{{v_email}}\", \"skill_level\":4}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/users?filters=true",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "filters",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getuser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/users/{{user_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user PUT",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\" : \"Oceanna8\", \"last_name\": \"Tudose884\", \"skill_level\":4}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/users/{{user_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user PUT with fetch",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"first_name\" : \"Oceanna8\", \"last_name\": \"Tudose884\", \"skill_level\":4}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/users/{{user_id}}?fetch=true",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users",
+						"{{user_id}}"
+					],
+					"query": [
+						{
+							"key": "fetch",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deprecate user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/users/{{user_id}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
